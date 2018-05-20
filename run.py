@@ -1,55 +1,58 @@
 #!/usr/bin/env python
 import sqlite3
-from simulator import runSimulation
-from drama import dramaticTyping
+from simulator import run_simulation
+from drama import dramatic_typing
 
-def fetchCoins():
+
+def fetch_coins():
     connection = sqlite3.connect('./currency_monitor.db')
     cursor = connection.cursor()
     query = "SELECT first_leg, ask FROM prices WHERE timestamp='1520408341.52' AND second_leg='USD';"
     cursor.execute(query)
-    coinAskPrices = cursor.fetchall()
+    coin_ask_prices = cursor.fetchall()
     coins = {}
-    for coinAskPrice in coinAskPrices:
-        if coinAskPrice[0] in coins:
+    for coin_ask_price in coin_ask_prices:
+        if coin_ask_price[0] in coins:
             continue
-        coins[coinAskPrice[0]] = {"price":coinAskPrice[1], "curreny":coinAskPrice[0]}
-        dramaticTyping("{} - ${} \n".format(coinAskPrice[0], round(coinAskPrice[1],4)))
+        coins[coin_ask_price[0]] = {"price": coin_ask_price[1], "curreny": coin_ask_price[0]}
+        dramatic_typing("{} - ${} \n".format(coin_ask_price[0], round(coin_ask_price[1], 4)))
     return coins
+
 
 def welcome():
     print("\n")
-    dramaticTyping("Simple Crypto Trading Simulator \n")
-    dramaticTyping("Hey Yo, you are back in time. It's Wednesday, March 7, 2018 7:39 AM \n")
-    dramaticTyping("Here are the crypto currencies you can invest. \n")
-    dramaticTyping("Fetching prices ... \n")
+    dramatic_typing("Simple Crypto Trading Simulator \n")
+    dramatic_typing("Hey Yo, you are back in time. It's Wednesday, March 7, 2018 7:39 AM \n")
+    dramatic_typing("Here are the crypto currencies you can invest. \n")
+    dramatic_typing("Fetching prices ... \n")
 
 
-def inputBuy():
-    dramaticTyping("Select the crypto curreny you want to buy? \n")
-    curreny = raw_input("").upper()
-    dramaticTyping("That's great. How much quantity you want to buy? \n")
-    quantity = float(raw_input(""))
-    return curreny, quantity
+def input_buy():
+    dramatic_typing("Select the crypto currency you want to buy? \n")
+    currency = input("").upper()
+    dramatic_typing("That's great. How much quantity you want to buy? \n")
+    quantity = float(input(""))
+    return currency, quantity
 
 def quitMenu():
-    dramaticTyping("Do you want to try again? Y/N ")
-    answer = raw_input("").upper()
+    dramatic_typing("Do you want to try again? Y/N ")
+    answer = input("").upper()
     if answer == 'Y':
         main()
     else:
         exit()
 
+
 def main():
     welcome()
-    coins = fetchCoins()
-    currency, quantity = inputBuy()
+    coins = fetch_coins()
+    currency, quantity = input_buy()
     try:
         price = coins[currency]['price']
     except Exception as e:
-        dramaticTyping("Invalid currency entered, please try again \n")
-        inputBuy()
-    runSimulation(coins[currency]['price'], quantity, currency)
+        dramatic_typing("Invalid currency entered, please try again \n")
+        input_buy()
+    run_simulation(coins[currency]['price'], quantity, currency)
     quitMenu()
 
 main()

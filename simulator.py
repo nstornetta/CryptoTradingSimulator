@@ -1,26 +1,36 @@
 #!/usr/bin/env python
 
 import sqlite3
-from drama import dramaticTyping
+from drama import dramatic_typing
 import datetime
 
-def fetchBestBidPriceFromDB(currency):
+
+def fetch_best_bid(currency):
     connection = sqlite3.connect('./currency_monitor.db')
     cursor = connection.cursor()
-    query = "SELECT max(bid),timestamp from prices WHERE first_leg='{}' and second_leg='USD' and timestamp> '1520408341.52'".format(currency)
+    query = """
+            SELECT 
+                max(bid),
+                timestamp 
+            FROM prices 
+            WHERE 
+                first_leg = '{}' and 
+                second_leg = 'USD' and 
+                timestamp > '1520408341.52'
+            """.format(currency)
     cursor.execute(query)
     rows = cursor.fetchone()
     return rows[0], rows[1]
 
 
-def runSimulation(boughtPrice, quantity, currency):
-    valueThen = boughtPrice * quantity
-    bestPrice, timestamp = fetchBestBidPriceFromDB(currency)
-    bestValue = bestPrice * quantity
-    priceDifference = (bestValue - valueThen)/float(valueThen) * 100
+def run_simulation(bought_price, quantity, currency):
+    value_then = bought_price * quantity
+    best_price, timestamp = fetch_best_bid(currency)
+    best_value = best_price * quantity
+    price_difference = (best_value - value_then)/float(value_then) * 100
     time = datetime.datetime.fromtimestamp(timestamp).strftime('%A, %B %-d, %Y %I:%M %p')
-    print("The best bid price for {} was ${} at {} \n".format(currency, bestPrice, time))
-    if priceDifference>0:
-        dramaticTyping("Your total asset value is ${}, it has increase by {}% \n".format(round(bestValue, 4), round(priceDifference,2)))
+    print("The best bid price for {} was ${} at {} \n".format(currency, best_price, time))
+    if price_difference > 0:
+        dramatic_typing("Your total asset value is ${}, it has increased by {}% \n".format(round(best_value, 4), round(price_difference, 2)))
     else:
-        dramaticTyping("Your total asset value is ${}, it has decreased by {} \n".format(round(bestValue, 4), round(priceDifference,2)))
+        dramatic_typing("Your total asset value is ${}, it has decreased by {} \n".format(round(best_value, 4), round(price_difference, 2)))
