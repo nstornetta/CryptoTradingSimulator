@@ -1,3 +1,5 @@
 ./venv
 ./currency_monitor.db
 *.db
+*.csv
+*.ipynb
